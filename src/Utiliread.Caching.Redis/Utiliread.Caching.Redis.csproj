@@ -6,6 +6,10 @@
     <Authors>Rasmus Melchior Jacobsen</Authors>
     <Company>Utiliread</Company>
     <Description>Redis tagable cache implementation.</Description>
+    <Copyright>Utiliread</Copyright>
+    <PackageProjectUrl>https://github.com/utiliread/Caching</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,7 +5,11 @@
     <LangVersion>latest</LangVersion>
     <Authors>Rasmus Melchior Jacobsen</Authors>
     <Company>Utiliread</Company>
-    <Description>Caching abstractions on top of IDistributedCache that supports tag cache invalidation.</Description>
+    <Description>Caching abstractions on top of IDistributedCache that supports tag invalidation.</Description>
+    <Copyright>Utiliread</Copyright>
+    <PackageProjectUrl>https://github.com/utiliread/Caching</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
