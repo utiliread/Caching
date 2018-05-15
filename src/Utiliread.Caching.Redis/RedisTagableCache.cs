@@ -32,6 +32,12 @@ local now = ARGV[1]
 local expiredKeys = redis.call('ZRANGEBYSCORE', '_expires-at_', '-inf', now)
 if #expiredKeys > 0 then
     redis.call('DEL', unpack(expiredKeys))
+    local i = 1
+    while i <= #expiredKeys-1000 do
+        redis.call('DEL', unpack(expiredKeys, i, i + 999))
+        i = i + 1000
+    end
+    redis.call('DEL', unpack(expiredKeys, i, #expiredKeys))
     for _,key in pairs(expiredKeys) do
         local keyTags = redis.call('SMEMBERS', key .. ':_tags_')
         for _,keyTag in pairs(keyTags) do
