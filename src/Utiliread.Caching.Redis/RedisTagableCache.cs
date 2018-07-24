@@ -174,7 +174,15 @@ return count";
             }
         }
 
-        public byte[] Get(string key) => throw new NotSupportedException();
+        public byte[] Get(string key)
+        {
+            Connect();
+
+            var now = DateTimeOffset.UtcNow;
+            var result = _cache.ScriptEvaluate(_getScript, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) });
+
+            return (byte[])result;
+        }
 
         public async Task<byte[]> GetAsync(string key, CancellationToken token = default)
         {
@@ -186,7 +194,24 @@ return count";
             return (byte[])result;
         }
 
-        public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => throw new NotSupportedException();
+        public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
+        {
+            if (options.AbsoluteExpiration != null && options.AbsoluteExpirationRelativeToNow != null)
+            {
+                throw new ArgumentException();
+            }
+
+            Connect();
+
+            var now = DateTimeOffset.UtcNow;
+            _cache.ScriptEvaluate(_setScript, new RedisKey[] { _prefix + key }, new RedisValue[]
+            {
+                GetNowUnixMillisecondTimestamp(now),
+                GetAbsoluteExpirationUnixMillisecondTimestamp(now, options) ?? -1,
+                (long?)options.SlidingExpiration?.TotalMilliseconds ?? -1,
+                value
+            });
+        }
 
         public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
         {
@@ -207,7 +232,13 @@ return count";
             });
         }
 
-        public void Refresh(string key) => throw new NotSupportedException();
+        public void Refresh(string key)
+        {
+            Connect();
+
+            var now = DateTimeOffset.UtcNow;
+            _cache.ScriptEvaluate(_refreshScript, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) }, CommandFlags.FireAndForget);
+        }
 
         public async Task RefreshAsync(string key, CancellationToken token = default)
         {
@@ -217,7 +248,12 @@ return count";
             await _cache.ScriptEvaluateAsync(_refreshScript, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) }, CommandFlags.FireAndForget);
         }
 
-        public void Remove(string key) => throw new NotSupportedException();
+        public void Remove(string key)
+        {
+            Connect();
+
+            _cache.ScriptEvaluate(_removeScript, new RedisKey[] { _prefix + key });
+        }
 
         public async Task RemoveAsync(string key, CancellationToken token = default)
         {
@@ -256,6 +292,29 @@ return count";
             await _cache.ScriptEvaluateAsync(_invalidateScript, keys, flags: CommandFlags.FireAndForget);
         }
 
+        private void Connect()
+        {
+            if (_connection != null)
+            {
+                return;
+            }
+
+            _connectionLock.Wait();
+
+            try
+            {
+                if (_connection == null)
+                {
+                    _connection = ConnectionMultiplexer.Connect(_options.Configuration);
+                    _cache = _connection.GetDatabase();
+                }
+            }
+            finally
+            {
+                _connectionLock.Release();
+            }
+        }
+
         private async Task ConnectAsync(CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -281,10 +340,7 @@ return count";
             }
         }
 
-        private static long GetNowUnixMillisecondTimestamp(DateTimeOffset now)
-        {
-            return (long)(now - UnixEpoch).TotalMilliseconds;
-        }
+        private static long GetNowUnixMillisecondTimestamp(DateTimeOffset now) => (long)(now - UnixEpoch).TotalMilliseconds;
 
         private static long? GetAbsoluteExpirationUnixMillisecondTimestamp(DateTimeOffset now, DistributedCacheEntryOptions options)
         {
@@ -300,12 +356,6 @@ return count";
             return null;
         }
 
-        public void Dispose()
-        {
-            if (_connection != null)
-            {
-                _connection.Close();
-            }
-        }
+        public void Dispose() => _connection?.Close();
     }
 }
