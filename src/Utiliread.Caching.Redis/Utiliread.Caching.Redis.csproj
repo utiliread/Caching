@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/utiliread/Caching</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
