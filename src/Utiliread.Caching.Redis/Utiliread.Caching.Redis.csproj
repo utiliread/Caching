@@ -8,6 +8,7 @@
     <Description>Redis tagable cache implementation.</Description>
     <Copyright>Utiliread</Copyright>
     <PackageProjectUrl>https://github.com/utiliread/Caching</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
     <Version>1.2.1</Version>

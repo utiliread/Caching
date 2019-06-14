@@ -8,6 +8,7 @@
     <Description>Caching abstractions on top of IDistributedCache that supports tag invalidation.</Description>
     <Copyright>Utiliread</Copyright>
     <PackageProjectUrl>https://github.com/utiliread/Caching</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
     <Version>1.1.1</Version>
