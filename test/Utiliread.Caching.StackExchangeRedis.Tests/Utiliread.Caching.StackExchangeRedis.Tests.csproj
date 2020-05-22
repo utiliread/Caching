@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Utiliread.Caching.Redis\Utiliread.Caching.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\..\src\Utiliread.Caching.StackExchangeRedis\Utiliread.Caching.StackExchangeRedis.csproj" />
   </ItemGroup>
 
 </Project>

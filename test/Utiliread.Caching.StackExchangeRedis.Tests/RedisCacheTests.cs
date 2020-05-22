@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Utiliread.Caching.Redis.Tests.Infrastrcuture;
+using Utiliread.Caching.StackExchangeRedis;
 using Xunit;
 
 namespace Utiliread.Caching.Redis.Tests

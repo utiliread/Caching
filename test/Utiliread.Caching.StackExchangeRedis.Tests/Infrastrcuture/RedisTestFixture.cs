@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Utiliread.Caching.StackExchangeRedis;
 using Xunit;
 
 namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
@@ -39,7 +39,7 @@ return 0";
         {
             var instanceNumber = Interlocked.Increment(ref _instanceNumber);
 
-            var instance = new RedisCache(new RedisCacheOptions()
+            var instance = new RedisCache(new Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions()
             {
                 Configuration = "localhost",
                 InstanceName = $"TagableCacheTestFixture:{instanceNumber}"
