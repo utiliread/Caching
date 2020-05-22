@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Utiliread.Caching
 {
-    public interface ITagableCache
+    public interface ITagable
     {
         Task TagAsync(string key, string[] tags, CancellationToken cancellationToken = default);
 

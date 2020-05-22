@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Utiliread.Caching.StackExchangeRedis;
 using Xunit;
+using RedisCacheOptions = Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions;
 
 namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
 {
@@ -13,7 +15,7 @@ namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
         private ConnectionMultiplexer _connection;
         private IDatabase _cache;
         private static int _instanceNumber = 0;
-        private static ConcurrentDictionary<RedisCache, int> _instances = new ConcurrentDictionary<RedisCache, int>();
+        private static ConcurrentDictionary<IDistributedCache, int> _instances = new ConcurrentDictionary<IDistributedCache, int>();
 
         private const string CleanupScript = @"
 local keys = redis.call('KEYS', 'TagableCacheTestFixture:*')
@@ -35,14 +37,14 @@ return 0";
             await _cache.ScriptEvaluateAsync(CleanupScript);
         }
 
-        public RedisCache CreateCacheInstance()
+        public IDistributedCache CreateCacheInstance()
         {
             var instanceNumber = Interlocked.Increment(ref _instanceNumber);
 
-            var instance = new RedisCache(new Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions()
+            var instance = new RedisCache(new RedisCacheOptions()
             {
                 Configuration = "localhost",
-                InstanceName = $"TagableCacheTestFixture:{instanceNumber}"
+                InstanceName = $"TagableCacheTestFixture:{instanceNumber}:"
             });
 
             _instances[instance] = instanceNumber;
@@ -50,7 +52,7 @@ return 0";
             return instance;
         }
 
-        public Task<string[]> GetKeysAsync(RedisCache cache)
+        public Task<string[]> GetKeysAsync(IDistributedCache cache)
         {
             var instanceNumber = _instances[cache];
 

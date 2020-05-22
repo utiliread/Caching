@@ -1,14 +1,14 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using RedisCacheOptions = Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions;
 
 namespace Utiliread.Caching.StackExchangeRedis
 {
-    public class RedisCache : IDistributedCache, ITagableCache, IDisposable
+    public class RedisCache : IDistributedCache, ITagable, IDisposable
     {
         private static readonly DateTimeOffset UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -165,7 +165,7 @@ return count";
 
             if (!string.IsNullOrEmpty(_options.InstanceName))
             {
-                _prefix = $"{_options.InstanceName}:";
+                _prefix = _options.InstanceName;
                 _getScript = GetScript.Replace("_expires-at_", $"{_prefix}_expires-at_");
                 _setScript = SetScript.Replace("_expires-at_", $"{_prefix}_expires-at_");
                 _refreshScript = RefreshScript.Replace("_expires-at_", $"{_prefix}_expires-at_");

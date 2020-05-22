@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Utiliread.Caching.Redis.Tests.Infrastrcuture;
-using Utiliread.Caching.StackExchangeRedis;
 using Xunit;
 
 namespace Utiliread.Caching.Redis.Tests
@@ -11,7 +10,7 @@ namespace Utiliread.Caching.Redis.Tests
     public class RedisCacheTests : IClassFixture<RedisTestFixture>
     {
         private readonly RedisTestFixture _fixture;
-        private readonly RedisCache _cache;
+        private readonly IDistributedCache _cache;
 
         public RedisCacheTests(RedisTestFixture fixture)
         {

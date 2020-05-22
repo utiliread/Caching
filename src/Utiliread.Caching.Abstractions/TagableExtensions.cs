@@ -5,11 +5,11 @@ using Utiliread.Caching;
 
 namespace Microsoft.Extensions.Caching.Distributed
 {
-    public static class DistributedCacheExtensions
+    public static class TagableExtensions
     {
         public static Task TagAsync(this IDistributedCache cache, string key, string[] tags, CancellationToken cancellationToken = default)
         {
-            if (cache is ITagableCache tagable)
+            if (cache is ITagable tagable)
             {
                 return tagable.TagAsync(key, tags, cancellationToken);
             }
@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Caching.Distributed
 
         public static Task InvalidateAsync(this IDistributedCache cache, string tag, CancellationToken cancellationToken = default)
         {
-            if (cache is ITagableCache tagable)
+            if (cache is ITagable tagable)
             {
                 return tagable.InvalidateAsync(tag, cancellationToken);
             }
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.Caching.Distributed
 
         public static Task InvalidateAsync(this IDistributedCache cache, string[] tags, CancellationToken cancellationToken = default)
         {
-            if (cache is ITagableCache tagable)
+            if (cache is ITagable tagable)
             {
                 return tagable.InvalidateAsync(tags, cancellationToken);
             }
