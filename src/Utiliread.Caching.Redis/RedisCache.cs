@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System;
@@ -7,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Utiliread.Caching.Redis
 {
-    public class RedisTagableCache : IDistributedTagableCache, IDisposable
+    public class RedisCache : IDistributedCache, ITagableCache, IDisposable
     {
         private static readonly DateTimeOffset UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private readonly RedisTagableCacheOptions _options;
+        private readonly RedisCacheOptions _options;
         private readonly string _prefix = string.Empty;
         private readonly string _getScript;
         private readonly string _setScript;
@@ -158,7 +159,7 @@ for _,tag in pairs(KEYS) do
 end
 return count";
 
-        public RedisTagableCache(IOptions<RedisTagableCacheOptions> optionsAccessor)
+        public RedisCache(IOptions<RedisCacheOptions> optionsAccessor)
         {
             _options = optionsAccessor.Value;
 
@@ -278,7 +279,7 @@ return count";
             await _cache.ScriptEvaluateAsync(_tagScript, keys);
         }
 
-        public async Task InvalidateTagsAsync(string[] tags, CancellationToken token = default)
+        public async Task InvalidateAsync(string[] tags, CancellationToken token = default)
         {
             await ConnectAsync(token);
 

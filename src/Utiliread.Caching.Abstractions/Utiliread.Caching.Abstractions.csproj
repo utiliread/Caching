@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Authors>Rasmus Melchior Jacobsen</Authors>
     <Company>Utiliread</Company>
     <Description>Caching abstractions on top of IDistributedCache that supports tag invalidation.</Description>
@@ -11,11 +10,11 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/utiliread/Caching.git</RepositoryUrl>
-    <Version>1.3.0</Version>
+    <Version>2.0.0-beta1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
   </ItemGroup>
 
 </Project>

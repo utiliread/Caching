@@ -7,12 +7,12 @@ using Xunit;
 
 namespace Utiliread.Caching.Redis.Tests
 {
-    public class RedisTaggedCacheTests : IClassFixture<RedisTestFixture>
+    public class RedisCacheTests : IClassFixture<RedisTestFixture>
     {
         private readonly RedisTestFixture _fixture;
-        private readonly IDistributedTagableCache _cache;
+        private readonly RedisCache _cache;
 
-        public RedisTaggedCacheTests(RedisTestFixture fixture)
+        public RedisCacheTests(RedisTestFixture fixture)
         {
             _fixture = fixture;
             _cache = _fixture.CreateCacheInstance();
@@ -263,7 +263,7 @@ namespace Utiliread.Caching.Redis.Tests
             await _cache.TagAsync("key", new[] { "tag1", "tag2" });
 
             // When
-            await _cache.InvalidateTagsAsync(new[] { "tag1" });
+            await _cache.InvalidateAsync(new[] { "tag1" });
 
             // Then
             Assert.Null(await _cache.GetAsync("key"));
@@ -286,7 +286,7 @@ namespace Utiliread.Caching.Redis.Tests
             await _cache.TagAsync("key", tags);
 
             // When
-            await _cache.InvalidateTagAsync("10");
+            await _cache.InvalidateAsync("10");
 
             // Then
             Assert.Null(await _cache.GetAsync("key"));
@@ -303,7 +303,7 @@ namespace Utiliread.Caching.Redis.Tests
             await _cache.TagAsync("key2", new[] { "tag2", "tag3" });
 
             // When
-            await _cache.InvalidateTagsAsync(new[] { "tag1" });
+            await _cache.InvalidateAsync(new[] { "tag1" });
 
             // Then
             Assert.Null(await _cache.GetAsync("key1"));
@@ -320,7 +320,7 @@ namespace Utiliread.Caching.Redis.Tests
             await _cache.TagAsync("key2", new[] { "tag2", "tag3" });
 
             // When
-            await _cache.InvalidateTagsAsync(new[] { "tag2" });
+            await _cache.InvalidateAsync(new[] { "tag2" });
 
             // Then
             Assert.Null(await _cache.GetAsync("key1"));

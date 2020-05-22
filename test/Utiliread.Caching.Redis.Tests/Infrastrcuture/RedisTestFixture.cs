@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
         private ConnectionMultiplexer _connection;
         private IDatabase _cache;
         private static int _instanceNumber = 0;
-        private static ConcurrentDictionary<IDistributedTagableCache, int> _instances = new ConcurrentDictionary<IDistributedTagableCache, int>();
+        private static ConcurrentDictionary<RedisCache, int> _instances = new ConcurrentDictionary<RedisCache, int>();
 
         private const string CleanupScript = @"
 local keys = redis.call('KEYS', 'TagableCacheTestFixture:*')
@@ -34,11 +35,11 @@ return 0";
             await _cache.ScriptEvaluateAsync(CleanupScript);
         }
 
-        public IDistributedTagableCache CreateCacheInstance()
+        public RedisCache CreateCacheInstance()
         {
             var instanceNumber = Interlocked.Increment(ref _instanceNumber);
 
-            var instance = new RedisTagableCache(new RedisTagableCacheOptions()
+            var instance = new RedisCache(new RedisCacheOptions()
             {
                 Configuration = "localhost",
                 InstanceName = $"TagableCacheTestFixture:{instanceNumber}"
@@ -49,7 +50,7 @@ return 0";
             return instance;
         }
 
-        public Task<string[]> GetKeysAsync(IDistributedTagableCache cache)
+        public Task<string[]> GetKeysAsync(RedisCache cache)
         {
             var instanceNumber = _instances[cache];
 
