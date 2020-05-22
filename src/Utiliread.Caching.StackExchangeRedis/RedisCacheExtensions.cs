@@ -10,9 +10,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddUtilireadRedisCache(this IServiceCollection services, Action<RedisCacheOptions> setupAction)
         {
             services.AddOptions();
-            services.AddSingleton<Utiliread.Caching.Redis.RedisCache>();
-            services.AddSingleton((Func<IServiceProvider, ITagableCache>)(sp => sp.GetService<Utiliread.Caching.Redis.RedisCache>()));
-            services.AddSingleton((Func<IServiceProvider, IDistributedCache>)(sp => sp.GetService<Utiliread.Caching.Redis.RedisCache>()));
+            services.AddSingleton<Utiliread.Caching.StackExchangeRedis.RedisCache>();
+            services.AddSingleton((Func<IServiceProvider, ITagableCache>)(sp => sp.GetService<Utiliread.Caching.StackExchangeRedis.RedisCache>()));
+            services.AddSingleton((Func<IServiceProvider, IDistributedCache>)(sp => sp.GetService<Utiliread.Caching.StackExchangeRedis.RedisCache>()));
 
             services.Configure(setupAction);
 

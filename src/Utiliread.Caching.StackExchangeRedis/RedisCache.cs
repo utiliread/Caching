@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Utiliread.Caching.Redis
+namespace Utiliread.Caching.StackExchangeRedis
 {
     public class RedisCache : IDistributedCache, ITagableCache, IDisposable
     {
@@ -306,7 +306,14 @@ return count";
             {
                 if (_connection == null)
                 {
-                    _connection = ConnectionMultiplexer.Connect(_options.Configuration);
+                    if (_options.ConfigurationOptions is object)
+                    {
+                        _connection = ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
+                    }
+                    else
+                    {
+                        _connection = ConnectionMultiplexer.Connect(_options.Configuration);
+                    }
                     _cache = _connection.GetDatabase();
                 }
             }
