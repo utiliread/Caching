@@ -11,6 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddOptions();
             services.AddSingleton<IDistributedCache, RedisCache>();
+            services.AddSingleton<RedisExpirer>();
+            services.AddHostedService(sp => sp.GetService<RedisExpirer>());
             services.Configure(setupAction);
 
             return services;

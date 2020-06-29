@@ -11,8 +11,6 @@ namespace Utiliread.Caching.Redis
 {
     public class RedisCache : IDistributedCache, ITagable, IDisposable
     {
-        private static readonly DateTimeOffset UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         private readonly RedisCacheOptions _options;
         private readonly string _prefix;
         private readonly LuaScripts _scripts;
@@ -224,17 +222,17 @@ namespace Utiliread.Caching.Redis
             }
         }
 
-        private static long GetNowUnixMillisecondTimestamp(DateTimeOffset now) => (long)(now - UnixEpoch).TotalMilliseconds;
+        private static long GetNowUnixMillisecondTimestamp(DateTimeOffset now) => (long)(now - Constants.UnixEpoch).TotalMilliseconds;
 
         private static long? GetAbsoluteExpirationUnixMillisecondTimestamp(DateTimeOffset now, DistributedCacheEntryOptions options)
         {
             if (options.AbsoluteExpiration.HasValue)
             {
-                return (long?)(options.AbsoluteExpiration.Value - UnixEpoch).TotalMilliseconds;
+                return (long?)(options.AbsoluteExpiration.Value - Constants.UnixEpoch).TotalMilliseconds;
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                return (long?)(now + options.AbsoluteExpirationRelativeToNow.Value - UnixEpoch).TotalMilliseconds;
+                return (long?)(now + options.AbsoluteExpirationRelativeToNow.Value - Constants.UnixEpoch).TotalMilliseconds;
             }
 
             return null;

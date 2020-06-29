@@ -29,6 +29,9 @@ namespace Utiliread.Caching.Redis.Scripts
         // KEYS[1..N] The tags to invalidate
         public readonly string Invalidate = ReadScript("Invalidate.lua");
 
+        // ARGV[1] Now unix milliseconds timestamp
+        public readonly string Expire = ReadScript("Expire.lua");
+
         public LuaScripts(string prefix)
         {
             Get = ReadScript("Get.lua").Replace("_expires-at_", $"{prefix}_expires-at_");
@@ -37,6 +40,7 @@ namespace Utiliread.Caching.Redis.Scripts
             Remove = ReadScript("Remove.lua").Replace("_expires-at_", $"{prefix}_expires-at_");
             Tag = ReadScript("Tag.lua").Replace("_expires-at_", $"{prefix}_expires-at_");
             Invalidate = ReadScript("Invalidate.lua").Replace("_expires-at_", $"{prefix}_expires-at_");
+            Expire = ReadScript("Expire.lua").Replace("_expires-at_", $"{prefix}_expires-at_");
         }
 
         private static string ReadScript(string filename)

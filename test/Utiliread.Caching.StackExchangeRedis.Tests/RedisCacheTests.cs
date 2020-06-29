@@ -337,7 +337,7 @@ namespace Utiliread.Caching.Redis.Tests
 
             // When
             await Task.Delay(150);
-            Assert.Null(await _cache.GetAsync("key1")); // Get triggers expiration
+            Assert.Null(await _cache.GetAsync("key1"));
 
             // Then
             Assert.NotNull(await _cache.GetAsync("key2"));
@@ -354,7 +354,8 @@ namespace Utiliread.Caching.Redis.Tests
 
             // When
             await Task.Delay(150);
-            Assert.Null(await _cache.GetAsync("key")); // Get triggers expiration
+            Assert.Null(await _cache.GetAsync("key"));
+            await _fixture.RunExpireAsync(_cache);
 
             // Then
             Assert.Empty(await _fixture.GetKeysAsync(_cache));
