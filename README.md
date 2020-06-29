@@ -3,7 +3,7 @@ This library extends the [Microsoft.Extensions.Caching](https://github.com/aspne
 
 The main interface for the tagable cache is:
 ```
-    public interface ITagableCache
+    public interface ITagable
     {
         Task TagAsync(string key, string[] tags, CancellationToken cancellationToken = default);
         Task InvalidateAsync(string tag, CancellationToken cancellationToken = default);
