@@ -7,12 +7,12 @@ using Xunit;
 
 namespace Utiliread.Caching.Redis.Tests
 {
-    public class RedisCacheTests : IClassFixture<RedisTestFixture>
+    public class RedisCacheTests : IClassFixture<RedisFixture>
     {
-        private readonly RedisTestFixture _fixture;
+        private readonly RedisFixture _fixture;
         private readonly IDistributedCache _cache;
 
-        public RedisCacheTests(RedisTestFixture fixture)
+        public RedisCacheTests(RedisFixture fixture)
         {
             _fixture = fixture;
             _cache = _fixture.CreateCacheInstance();

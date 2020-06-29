@@ -4,13 +4,12 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Utiliread.Caching.StackExchangeRedis;
 using Xunit;
 using RedisCacheOptions = Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions;
 
 namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
 {
-    public class RedisTestFixture : IAsyncLifetime
+    public class RedisFixture : IAsyncLifetime
     {
         private ConnectionMultiplexer _connection;
         private IDatabase _cache;

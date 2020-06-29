@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using System;
-using Utiliread.Caching.StackExchangeRedis;
+using Utiliread.Caching.Redis;
 using RedisCacheOptions = Microsoft.Extensions.Caching.StackExchangeRedis.RedisCacheOptions;
 
 namespace Microsoft.Extensions.DependencyInjection
