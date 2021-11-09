@@ -11,9 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utiliread.Caching.Redis", "src\Utiliread.Caching.StackExchangeRedis\Utiliread.Caching.Redis.csproj", "{F594DBB0-1B13-4CEB-9056-C22480CF7439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utiliread.Caching.Redis", "src\Utiliread.Caching.Redis\Utiliread.Caching.Redis.csproj", "{82A6C93A-67AE-4A1C-8FAB-0DBEAFBE59B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utiliread.Caching.Redis.Tests", "test\Utiliread.Caching.StackExchangeRedis.Tests\Utiliread.Caching.Redis.Tests.csproj", "{BE41D9C3-B814-422D-BC7C-600F340987A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utiliread.Caching.Redis.Tests", "test\Utiliread.Caching.Redis.Tests\Utiliread.Caching.Redis.Tests.csproj", "{272E088A-D882-4E91-A371-152A0C790E63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{7F9A0CAC-9ACF-49F9-975E-CB64AA9D4F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F9A0CAC-9ACF-49F9-975E-CB64AA9D4F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F9A0CAC-9ACF-49F9-975E-CB64AA9D4F47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F594DBB0-1B13-4CEB-9056-C22480CF7439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F594DBB0-1B13-4CEB-9056-C22480CF7439}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F594DBB0-1B13-4CEB-9056-C22480CF7439}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F594DBB0-1B13-4CEB-9056-C22480CF7439}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE41D9C3-B814-422D-BC7C-600F340987A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE41D9C3-B814-422D-BC7C-600F340987A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE41D9C3-B814-422D-BC7C-600F340987A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE41D9C3-B814-422D-BC7C-600F340987A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A6C93A-67AE-4A1C-8FAB-0DBEAFBE59B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A6C93A-67AE-4A1C-8FAB-0DBEAFBE59B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A6C93A-67AE-4A1C-8FAB-0DBEAFBE59B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A6C93A-67AE-4A1C-8FAB-0DBEAFBE59B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{272E088A-D882-4E91-A371-152A0C790E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{272E088A-D882-4E91-A371-152A0C790E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{272E088A-D882-4E91-A371-152A0C790E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{272E088A-D882-4E91-A371-152A0C790E63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
