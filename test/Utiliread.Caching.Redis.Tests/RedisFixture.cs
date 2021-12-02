@@ -14,10 +14,9 @@ namespace Utiliread.Caching.Redis.Tests.Infrastrcuture
     public class RedisFixture : IAsyncLifetime
     {
         private ConnectionMultiplexer _connection;
-        private IDatabase _cache;
         private static int _instanceNumber = 0;
-        private static ConcurrentDictionary<IDistributedCache, int> _index = new ConcurrentDictionary<IDistributedCache, int>();
-        private static ConcurrentDictionary<IDistributedCache, IServiceProvider> _services = new ConcurrentDictionary<IDistributedCache, IServiceProvider>();
+        private static readonly ConcurrentDictionary<IDistributedCache, int> _index = new();
+        private static readonly ConcurrentDictionary<IDistributedCache, IServiceProvider> _services = new();
 
         private const string CleanupScript = @"
 local keys = redis.call('KEYS', 'TagableCacheTestFixture:*')
@@ -31,12 +30,14 @@ if #keys > 0 then
 end
 return 0";
 
+        public IDatabase Database { get; private set; }
+
         public async Task InitializeAsync()
         {
             _connection = await ConnectionMultiplexer.ConnectAsync("localhost");
-            _cache = _connection.GetDatabase();
+            Database = _connection.GetDatabase();
 
-            await _cache.ScriptEvaluateAsync(CleanupScript);
+            await Database.ScriptEvaluateAsync(CleanupScript);
         }
 
         public IDistributedCache CreateCacheInstance()
@@ -57,6 +58,12 @@ return 0";
             _services[instance] = services;
 
             return instance;
+        }
+
+        public string GetInstanceName(IDistributedCache cache)
+        {
+            var instanceNumber = _index[cache];
+            return $"TagableCacheTestFixture:{instanceNumber}:";
         }
 
         public Task<string[]> GetKeysAsync(IDistributedCache cache)
@@ -80,7 +87,7 @@ return 0";
 
         public async Task DisposeAsync()
         {
-            await _cache.ScriptEvaluateAsync(CleanupScript);
+            await Database.ScriptEvaluateAsync(CleanupScript);
 
             _connection.Dispose();
         }

@@ -6,7 +6,7 @@ if expire then
         return nil
     end
     local values = redis.call('HMGET', key, 'absexp', 'sldexp', 'data')
-    if values[1] ~= nil and values[2] ~= '-1' then
+    if values[1] and values[2] ~= '-1' then
         if values[1] ~= '-1' then
             redis.call('ZADD', '_expires-at_', math.min(0 + values[1], now + values[2]), key)
         else

@@ -6,8 +6,7 @@ for _, tag in pairs(KEYS) do
         for _, key in pairs(expiredKeys) do
             local keyTags = redis.call('SMEMBERS', key..':_tags_')
             for _, keyTag in pairs(keyTags) do
-        redis.call('SREM', keyTag, key)
- 
+                redis.call('SREM', keyTag, key)
              end
             redis.call('DEL', key..':_tags_')
         end

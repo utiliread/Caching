@@ -42,6 +42,20 @@ namespace Utiliread.Caching.Redis.Tests
         }
 
         [Fact]
+        public async Task Get_KeyWithExpirationIsManuallyDeleted()
+        {
+            // Given
+            var instanceName = _fixture.GetInstanceName(_cache);
+            await _cache.SetStringAsync("key", "value", new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)));
+            Assert.True(await _fixture.Database.KeyDeleteAsync(instanceName + "key"));
+
+            // When
+            Assert.Null(await _cache.GetAsync("key"));
+
+            // Then
+        }
+
+        [Fact]
         public async Task Set_AlwaysOverrides()
         {
             // Given
