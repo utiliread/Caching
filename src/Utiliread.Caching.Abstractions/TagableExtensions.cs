@@ -9,32 +9,27 @@ namespace Microsoft.Extensions.Caching.Distributed
     {
         public static Task TagAsync(this IDistributedCache cache, string key, string[] tags, CancellationToken cancellationToken = default)
         {
-            if (cache is ITagable tagable)
-            {
-                return tagable.TagAsync(key, tags, cancellationToken);
-            }
-
-            throw new NotSupportedException();
+            return GetTagable(cache).TagAsync(key, tags, cancellationToken);
         }
 
         public static Task InvalidateAsync(this IDistributedCache cache, string tag, CancellationToken cancellationToken = default)
         {
-            if (cache is ITagable tagable)
-            {
-                return tagable.InvalidateAsync(tag, cancellationToken);
-            }
-
-            return InvalidateAsync(cache, new[] { tag }, cancellationToken);
+            return GetTagable(cache).InvalidateAsync(tag, cancellationToken);
         }
 
         public static Task InvalidateAsync(this IDistributedCache cache, string[] tags, CancellationToken cancellationToken = default)
         {
+            return GetTagable(cache).InvalidateAsync(tags, cancellationToken);
+        }
+
+        private static ITagable GetTagable(IDistributedCache cache)
+        {
             if (cache is ITagable tagable)
             {
-                return tagable.InvalidateAsync(tags, cancellationToken);
+                return tagable;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("The cache does not implement ITagable");
         }
     }
 }
