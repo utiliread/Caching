@@ -21,7 +21,6 @@ namespace Utiliread.Caching.Redis
         public RedisCache(IOptions<RedisCacheOptions> optionsAccessor)
         {
             _options = optionsAccessor.Value;
-
             _prefix = _options.InstanceName ?? string.Empty;
             _scripts = new LuaScripts(_prefix);
         }
@@ -30,21 +29,19 @@ namespace Utiliread.Caching.Redis
         {
             var connection = GetConnection();
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
-            var result = database.ScriptEvaluate(_scripts.Get, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) });
-
+            var result = database.ScriptEvaluate(_scripts.Get, new RedisKey[] { _prefix + key }, new RedisValue[] { now.ToUnixTimeMilliseconds() });
             return (byte[])result;
         }
 
-        public async Task<byte[]> GetAsync(string key, CancellationToken token = default)
+        public async Task<byte[]> GetAsync(string key, CancellationToken cancellationToken = default)
         {
-            var connection = await GetConnectionAsync(token).ConfigureAwait(false);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
-            var result = await database.ScriptEvaluateAsync(_scripts.Get, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) });
-
+            var result = await database
+                .ScriptEvaluateAsync(_scripts.Get, new RedisKey[] { _prefix + key }, new RedisValue[] { now.ToUnixTimeMilliseconds() })
+                .ConfigureAwait(false);
             return (byte[])result;
         }
 
@@ -57,106 +54,107 @@ namespace Utiliread.Caching.Redis
 
             var connection = GetConnection();
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
             database.ScriptEvaluate(_scripts.Set, new RedisKey[] { _prefix + key }, new RedisValue[]
             {
-                GetNowUnixMillisecondTimestamp(now),
+                now.ToUnixTimeMilliseconds(),
                 GetAbsoluteExpirationUnixMillisecondTimestamp(now, options) ?? -1,
                 (long?)options.SlidingExpiration?.TotalMilliseconds ?? -1,
                 value
             });
         }
 
-        public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
+        public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             if (options.AbsoluteExpiration != null && options.AbsoluteExpirationRelativeToNow != null)
             {
                 throw new ArgumentException();
             }
 
-            var connection = await GetConnectionAsync(token).ConfigureAwait(false);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
-            await database.ScriptEvaluateAsync(_scripts.Set, new RedisKey[] { _prefix + key }, new RedisValue[]
-            {
-                GetNowUnixMillisecondTimestamp(now),
-                GetAbsoluteExpirationUnixMillisecondTimestamp(now, options) ?? -1,
-                (long?)options.SlidingExpiration?.TotalMilliseconds ?? -1,
-                value
-            });
+            await database
+                .ScriptEvaluateAsync(_scripts.Set, new RedisKey[] { _prefix + key }, new RedisValue[]
+                {
+                    now.ToUnixTimeMilliseconds(),
+                    GetAbsoluteExpirationUnixMillisecondTimestamp(now, options) ?? -1,
+                    (long?)options.SlidingExpiration?.TotalMilliseconds ?? -1,
+                    value
+                })
+                .ConfigureAwait(false);
         }
 
         public void Refresh(string key)
         {
             var connection = GetConnection();
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
-            database.ScriptEvaluate(_scripts.Refresh, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) }, CommandFlags.FireAndForget);
+            database.ScriptEvaluate(_scripts.Refresh, new RedisKey[] { _prefix + key }, new RedisValue[] { now.ToUnixTimeMilliseconds() }, CommandFlags.FireAndForget);
         }
 
-        public async Task RefreshAsync(string key, CancellationToken token = default)
+        public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
         {
-            var connection = await GetConnectionAsync(token).ConfigureAwait(false);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
-
             var now = DateTimeOffset.UtcNow;
-            await database.ScriptEvaluateAsync(_scripts.Refresh, new RedisKey[] { _prefix + key }, new RedisValue[] { GetNowUnixMillisecondTimestamp(now) }, CommandFlags.FireAndForget);
+            await database
+                .ScriptEvaluateAsync(_scripts.Refresh, new RedisKey[] { _prefix + key }, new RedisValue[] { now.ToUnixTimeMilliseconds() }, CommandFlags.FireAndForget)
+                .ConfigureAwait(false);
         }
 
         public void Remove(string key)
         {
             var connection = GetConnection();
             var database = connection.GetDatabase();
-
             database.ScriptEvaluate(_scripts.Remove, new RedisKey[] { _prefix + key });
         }
 
-        public async Task RemoveAsync(string key, CancellationToken token = default)
+        public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            var connection = await GetConnectionAsync(token);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
-
-            await database.ScriptEvaluateAsync(_scripts.Remove, new RedisKey[] { _prefix + key });
+            await database
+                .ScriptEvaluateAsync(_scripts.Remove, new RedisKey[] { _prefix + key })
+                .ConfigureAwait(false);
         }
 
-        public async Task TagAsync(string key, string[] tags, CancellationToken token = default)
+        public async Task TagAsync(string key, string[] tags, CancellationToken cancellationToken = default)
         {
-            var connection = await GetConnectionAsync(token);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
 
             var keys = new RedisKey[tags.Length + 1];
-
             for (var i = 0; i < tags.Length; i++)
             {
                 keys[i] = _prefix + "_tag_:" + tags[i];
             }
-
             keys[tags.Length] = _prefix + key;
 
-            await database.ScriptEvaluateAsync(_scripts.Tag, keys);
+            await database
+                .ScriptEvaluateAsync(_scripts.Tag, keys)
+                .ConfigureAwait(false);
         }
 
-        public async Task InvalidateAsync(string[] tags, CancellationToken token = default)
+        public async Task InvalidateAsync(string[] tags, CancellationToken cancellationToken = default)
         {
-            var connection = await GetConnectionAsync(token);
+            var connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
             var database = connection.GetDatabase();
 
             var keys = new RedisKey[tags.Length];
-
             for (var i = 0; i < tags.Length; i++)
             {
                 keys[i] = _prefix + "_tag_:" + tags[i];
             }
 
-            await database.ScriptEvaluateAsync(_scripts.Invalidate, keys, flags: CommandFlags.FireAndForget);
+            await database
+                .ScriptEvaluateAsync(_scripts.Invalidate, keys, flags: CommandFlags.FireAndForget)
+                .ConfigureAwait(false);
         }
 
         private ConnectionMultiplexer GetConnection()
         {
-            if (_connection != null)
+            if (_connection is not null)
             {
                 return _connection;
             }
@@ -165,21 +163,7 @@ namespace Utiliread.Caching.Redis
 
             try
             {
-                if (_connection != null)
-                {
-                    return _connection;
-                }
-
-                if (_options.ConfigurationOptions is object)
-                {
-                    _connection = ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
-                }
-                else
-                {
-                    _connection = ConnectionMultiplexer.Connect(_options.Configuration);
-                }
-
-                return _connection;
+                return _connection ??= Connect();
             }
             finally
             {
@@ -187,34 +171,32 @@ namespace Utiliread.Caching.Redis
             }
         }
 
-        private async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken token)
+        private ConnectionMultiplexer Connect()
         {
-            token.ThrowIfCancellationRequested();
+            if (_options.ConfigurationOptions is not null)
+            {
+                return ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
+            }
+            else
+            {
+                return ConnectionMultiplexer.Connect(_options.Configuration);
+            }
+        }
 
-            if (_connection != null)
+        private async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_connection is not null)
             {
                 return _connection;
             }
 
-            await _connectionLock.WaitAsync(token).ConfigureAwait(false);
+            await _connectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                if (_connection != null)
-                {
-                    return _connection;
-                }
-
-                if (_options.ConfigurationOptions is object)
-                {
-                    _connection = ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
-                }
-                else
-                {
-                    _connection = ConnectionMultiplexer.Connect(_options.Configuration);
-                }
-
-                return _connection;
+                return _connection ??= await ConnectAsync().ConfigureAwait(false);
             }
             finally
             {
@@ -222,17 +204,27 @@ namespace Utiliread.Caching.Redis
             }
         }
 
-        private static long GetNowUnixMillisecondTimestamp(DateTimeOffset now) => (long)(now - Constants.UnixEpoch).TotalMilliseconds;
+        private Task<ConnectionMultiplexer> ConnectAsync()
+        {
+            if (_options.ConfigurationOptions is not null)
+            {
+                return ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions);
+            }
+            else
+            {
+                return ConnectionMultiplexer.ConnectAsync(_options.Configuration);
+            }
+        }
 
         private static long? GetAbsoluteExpirationUnixMillisecondTimestamp(DateTimeOffset now, DistributedCacheEntryOptions options)
         {
             if (options.AbsoluteExpiration.HasValue)
             {
-                return (long?)(options.AbsoluteExpiration.Value - Constants.UnixEpoch).TotalMilliseconds;
+                return options.AbsoluteExpiration?.ToUnixTimeMilliseconds();
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                return (long?)(now + options.AbsoluteExpirationRelativeToNow.Value - Constants.UnixEpoch).TotalMilliseconds;
+                return (now + options.AbsoluteExpirationRelativeToNow.Value).ToUnixTimeMilliseconds();
             }
 
             return null;

@@ -26,8 +26,8 @@ namespace Utiliread.Caching.Redis
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            await EnsureConnectionAsync();
-            await base.StartAsync(cancellationToken);
+            await EnsureConnectionAsync().ConfigureAwait(false);
+            await base.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -36,14 +36,14 @@ namespace Utiliread.Caching.Redis
             {
                 try
                 {
-                    await RunExpireAsync();
+                    await RunExpireAsync().ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     _logger?.LogError(e, "Unhandled exception");
                 }
 
-                await Task.Delay(60_000, stoppingToken);
+                await Task.Delay(60_000, stoppingToken).ConfigureAwait(false);
             }
         }
 
@@ -51,23 +51,21 @@ namespace Utiliread.Caching.Redis
         {
             if (_connection is null)
             {
-                if (_options.ConfigurationOptions is object)
+                if (_options.ConfigurationOptions is not null)
                 {
-                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions);
+                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions).ConfigureAwait(false);
                 }
                 else
                 {
-                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.Configuration);
+                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.Configuration).ConfigureAwait(false);
                 }
             }
         }
 
-        internal async Task RunExpireAsync()
+        internal Task RunExpireAsync()
         {
             var database = _connection.GetDatabase();
-
-            var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            await database.ScriptEvaluateAsync(_scripts.Expire, values: new RedisValue[] { now });
+            return _scripts.ExpireAsync(database);
         }
     }
 }
