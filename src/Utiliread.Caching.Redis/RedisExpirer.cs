@@ -65,7 +65,8 @@ namespace Utiliread.Caching.Redis
         internal Task RunExpireAsync()
         {
             var database = _connection.GetDatabase();
-            return _scripts.ExpireAsync(database);
+            var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            return database.ScriptEvaluateAsync(_scripts.Expire, values: new RedisValue[] { now });
         }
     }
 }
