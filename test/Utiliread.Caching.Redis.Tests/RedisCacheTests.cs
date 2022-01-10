@@ -83,23 +83,23 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Set_SlidingExpiration()
         {
             // Given
-            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMilliseconds(200));
+            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMilliseconds(400));
 
             await _cache.SetStringAsync("key", "value", options);
 
             // When
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
 
             // Then
-            await Task.Delay(300);
+            await Task.Delay(600);
             Assert.Null(await _cache.GetStringAsync("key"));
         }
 
@@ -107,17 +107,17 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Set_RelativeExpiration()
         {
             // Given
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(200));
+            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(400));
 
             await _cache.SetStringAsync("key", "value", options);
 
             // When
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
 
             // Then
-            await Task.Delay(200);
+            await Task.Delay(400);
             Assert.Null(await _cache.GetStringAsync("key"));
         }
 
@@ -126,17 +126,17 @@ namespace Utiliread.Caching.Redis.Tests
         {
             // Given
             var now = DateTime.UtcNow;
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(now.AddMilliseconds(200));
+            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(now.AddMilliseconds(400));
 
             await _cache.SetStringAsync("key", "value", options);
 
             // When
             Assert.Equal("value", await _cache.GetStringAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
 
             // Then
-            await Task.Delay(200);
+            await Task.Delay(400);
             Assert.Null(await _cache.GetStringAsync("key"));
         }
 
@@ -165,18 +165,18 @@ namespace Utiliread.Caching.Redis.Tests
             // Given
             var now = DateTime.UtcNow;
             var options = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(now.AddMilliseconds(200))
-                .SetSlidingExpiration(TimeSpan.FromMilliseconds(400));
+                .SetAbsoluteExpiration(now.AddMilliseconds(400))
+                .SetSlidingExpiration(TimeSpan.FromMilliseconds(800));
 
             await _cache.SetStringAsync("key", "value", options);
 
             // When
             Assert.NotNull(await _cache.GetAsync("key"));
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.NotNull(await _cache.GetAsync("key"));
 
             // Then
-            await Task.Delay(200);
+            await Task.Delay(400);
             Assert.Null(await _cache.GetAsync("key"));
         }
 
@@ -184,13 +184,13 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Set_OverridesExpiration()
         {
             // Given
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(100));
+            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(200));
 
             await _cache.SetStringAsync("key", "value", options);
             await _cache.SetStringAsync("key", "value");
 
             // When
-            await Task.Delay(150);
+            await Task.Delay(300);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
 
             // Then
@@ -200,20 +200,20 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Refresh()
         {
             // Given
-            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMilliseconds(200));
+            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMilliseconds(400));
 
             await _cache.SetStringAsync("key", "value", options);
 
             // When
-            await Task.Delay(100);
+            await Task.Delay(200);
             await _cache.RefreshAsync("key");
-            await Task.Delay(100);
+            await Task.Delay(200);
             await _cache.RefreshAsync("key");
-            await Task.Delay(100);
+            await Task.Delay(200);
             Assert.Equal("value", await _cache.GetStringAsync("key"));
 
             // Then
-            await Task.Delay(300);
+            await Task.Delay(600);
             Assert.Null(await _cache.GetStringAsync("key"));
         }
 
@@ -346,11 +346,11 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Expiration_RemovesOnlyExpired()
         {
             // Given
-            await _cache.SetStringAsync("key1", "value1", new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(100)));
-            await _cache.SetStringAsync("key2", "value2", new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(200)));
+            await _cache.SetStringAsync("key1", "value1", new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(200)));
+            await _cache.SetStringAsync("key2", "value2", new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(400)));
 
             // When
-            await Task.Delay(150);
+            await Task.Delay(300);
             Assert.Null(await _cache.GetAsync("key1"));
 
             // Then
@@ -361,13 +361,13 @@ namespace Utiliread.Caching.Redis.Tests
         public async Task Expiration_RemovesTags()
         {
             // Given
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(100));
+            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMilliseconds(200));
 
             await _cache.SetStringAsync("key", "value", options);
             await _cache.TagAsync("key", new[] { "tag1", "tag2" });
 
             // When
-            await Task.Delay(150);
+            await Task.Delay(300);
             Assert.Null(await _cache.GetAsync("key"));
             await _fixture.RunExpireAsync(_cache);
 
